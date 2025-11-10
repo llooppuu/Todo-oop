@@ -1,21 +1,23 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-
 import todoRoutes from './routes/todos.js'
+import { TodoController } from './controllers/todos.js'
 
 const app = express()
 app.use(bodyParser.json())
-
 app.use(express.urlencoded({extended: true}))
 
-app.use('/todos', todoRoutes)
+async function startServer(){
+    try{
+        await TodoController.initTodos()
+        app.use("/todos", todoRoutes)
+        app.listen(3001,() => {
+            console.log(`Server is running at http://localhost:3001`)
+        })
+    }
+    catch(error){
+        console.log(error)
+    }
+}
 
-app.get('/json-test', (req, res) => {
-    res.send({
-        message: 'json test ok'
-    })
-})
-
-app.listen(3009, () => {
-    console.log('Server is running at port 3009')
-})
+startServer()
